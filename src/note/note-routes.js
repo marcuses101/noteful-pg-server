@@ -12,7 +12,7 @@ noteRouter
   .route("/")
   .get(async (req, res, next) => {
     try {
-    const notes = noteService.getAllNotes(req.app.get('db'));
+    const notes = await noteService.getAllNotes(req.app.get('db'));
     res.json(notes.map(serializeNote))
     } catch (error) {
       next(error);
@@ -29,7 +29,7 @@ noteRouter
       }
       newNote.modified = modified;
       const note = await noteService.insertNote(req.app.get('db'), newNote);
-      res.status(201).json(serializeNote(note));
+      res.status(201).location(path.posix.join(req.originalUrl, `/${note.id}`)).json(serializeNote(note));
     } catch (error) {
       next(error);
     }
@@ -41,7 +41,7 @@ noteRouter
     try {
       const {id} = req.params
       const note = await noteService.getNoteById(req.app.get("db"),id)
-      if (!note) res.status(404).json({
+      if (!note) return res.status(404).json({
         error: {message: `note with id ${id} not found`}
       })
       req.note = serializeNote(note);
@@ -68,6 +68,7 @@ noteRouter
   .delete(async (req, res, next) => {
     try {
       await noteService.deleteNote(req.app.get('db'),req.note.id)
+      res.status(204).send(`note with id: ${req.note.id} deleted`)
     } catch (error) {
       next(error);
     }
