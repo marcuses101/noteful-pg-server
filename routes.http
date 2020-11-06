@@ -1,0 +1,14 @@
+GET http://localhost:8000 HTTP/1.1
+###
+GET http://localhost:8000/api/folder/ HTTP/1.1
+
+###
+GET http://localhost:8000/api/folder/3 HTTP/1.1
+
+###
+POST http://localhost:8000/api/folder/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "This is a test"
+}
